@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <title>BlackJack</title>
+</head>
+<body>
+    <div id="game-time-container">
+        <div id="game-time">
+            0h 0m 0s
+        </div>
+    </div>
+
+    <div id="settings-container">
+        <button id="settings-button" onclick="displaySettings()"><img src="assets/img/icons/settings.png" alt="settings-icon" id="settings-icon"></button>
+    </div>
+
+    <div id="settings-page">
+        <p>Number of packs of cards</p>
+        <input type="range" value="6" min="1" max="12" id="nb-decks-selector">
+        <p id="nb-decks">6</p>
+        <br>
+        <div id="buttons-container">
+            <button onclick="startGame();displaySettings()">(Re)Start a game</button>
+        </div>
+    </div>
+
+    <div id="game-rules-container">
+        <div id="game-rules">
+            Rules :<br><br>
+            Dealer must stand on soft 17<br>
+            BlackJack pays 3 to 2<br>
+            Insurance pays 2 to 1<br>
+            Insurance cost 1/2 of your initial bet<br>
+        </div>
+    </div>
+
+    <div id="bankroll-container">
+        <p id="bankroll">Bankroll : 5000 €<br>Bet : 0 €</p>
+    </div>
+
+    <div id="dealer-wrapper">
+        <div id="dealer-container">
+            <p>Dealer</p>
+            <br>
+            <div class="cards-container" id="dealer-deck">
+            </div>
+            <br>
+            <p class="score" id="dealer-score"></p>
+        </div>
+    </div>
+    <div id="player-wrapper">
+        <div id="player-container">
+            <p>You</p>
+            <br>
+            <div class="cards-container" id="player-deck">
+            </div>
+            <br>
+            <p class="score" id="player-score"></p>
+        </div>
+    </div>
+
+    <div id="actions-wrapper">
+        <div id="actions-container">
+            <button class="action-button bet-button coins" id="ten" value="10">
+                <img src="assets/img/coins/10.png" alt="10" class="bet-images" id="ten-coin" onclick="bet(10)">
+            </button>
+            <button class="action-button bet-button coins" id="fifty" value="50">
+                <img src="assets/img/coins/50.png" alt="50" class="bet-images" id="fifty-coin" onclick="bet(50)">
+            </button>
+            <button class="action-button bet-button coins" id="hundred" value="100">
+                <img src="assets/img/coins/100.png" alt="100" class="bet-images" id="hundred-coin" onclick="bet(100)">
+            </button>
+            <button class="action-button bet-button coins" id="five-hundred" value="500">
+                <img src="assets/img/coins/500.png" alt="500" class="bet-images" id="five-hundred-coin" onclick="bet(500)">
+            </button>
+            <button class="action-button bet-button coins" id="thousand" value="1000">
+                <img src="assets/img/coins/1000.png" alt="1000" class="bet-images" id="thousand-coin" onclick="bet(1000)">
+            </button>
+            <button class="action-button bet-button" id="clear-bet" onclick="bet(-1)"><img src="assets/img/icons/clear-bet.png" alt="clear-bet-button" class="bet-images"></button>
+            <button class="action-button bet-button" id="start" onclick="start()" disabled><img src="assets/img/icons/play-button.png" alt="start-button" class="bet-images"></button>
+            <button class="action-button play-button" id="stand" onclick="action('stand')"">Stand</button>
+            <button class="action-button play-button" id="split" onclick="action('split')">Split</button>
+            <button class="action-button play-button" id="double" onclick="action('double')">Double</button>
+            <button class="action-button play-button" id="hit" onclick="action('hit')">Hit</button>
+        </div>
+    </div>
+
+    <div id="insurance-wrapper">
+        <div id="insurance-container">
+            <p>Do you want to insure ?</p><br>
+            <button id="insure" onclick="action('insure')">Yes</button>
+            <button id="dont-insure" onclick="action('dont_insure')">No</button>
+        </div>
+    </div>
+
+    <div id="result-wrapper">
+        <div id="result-container">
+            <p id="result"></p>
+        </div>
+    </div>
+
+    <script src="assets/js/script.js"></script>
+</body>
+</html>
