@@ -360,6 +360,7 @@ body {
 }
 
 .action-button:disabled {
+  padding: 0 !important;
   opacity: 0.35;
   cursor: not-allowed;
   filter: grayscale(0.5);
@@ -385,6 +386,8 @@ body {
 .bet-images {
   width: 70px;
   height: 70px;
+  object-fit: contain;
+  margin: auto;
   border-radius: 50%;
   display: block;
 }

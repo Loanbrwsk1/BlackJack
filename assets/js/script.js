@@ -262,7 +262,7 @@ async function start()
     dealer_score = scoreCalculation(dealer_hand);
     if(cards_value[player_hand[0][0]] != cards_value[player_hand[1][0]]){
         split_button.disabled = true;
-    }dealer_score
+    }
     if(dealer_hand[0][0] == "A"){
         displayInsurance();
         return;
