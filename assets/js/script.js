@@ -1,13 +1,14 @@
 const settings_page = document.getElementById("settings-page");
 const nb_decks = document.getElementById("nb-decks");
 const nb_decks_slider = document.getElementById("nb-decks-selector");
+const start_button = document.getElementById("start-button");
 const dealer_hand_displayed = document.getElementById("dealer-deck");
 const dealer_score_displayed = document.getElementById("dealer-score");
 const player_hand_displayed = document.getElementById("player-deck");
 const player_score_displayed = document.getElementById("player-score");
 const bet_buttons = document.querySelectorAll(".bet-button");
 const play_buttons = document.querySelectorAll(".play-button");
-const start_button = document.getElementById("start");
+const play_button = document.getElementById("play");
 const split_button = document.getElementById("split");
 const double_button = document.getElementById("double");
 const game_time_displayed = document.getElementById("game-time");
@@ -24,7 +25,7 @@ let deck = [];
 let dealer_hand = [];
 let dealer_score = 0;
 let player_hand = [];
-let split_split_deck = [];
+let split_player_hand = [];
 let player_score = 0;
 let player_bet = 0;
 let insurance_bet = 0;
@@ -106,40 +107,18 @@ function dealCardTo(who)
 
 async function displayPlayerCards(nb = 0)
 {
-    if(nb != 1){
-        let i;
-        for(i = player_hand.length - 1 ; i < player_hand.length ; i++){
-            player_hand_displayed.innerHTML += "<img src='assets/img/cards/" + player_hand[i][0] +  player_hand[i][1]  + ".png' class='cards'>";
-            player_score_displayed.innerHTML = scoreCalculation(player_hand.slice(0, i + 1));
-            await sleep(500);
-        }
-    }
-    else{
-        player_hand_displayed.innerHTML = "";
-        let i;
-        for(i = 0 ; i < player_hand.length ; i++){
-            player_hand_displayed.innerHTML += "<img src='assets/img/cards/" + player_hand[i][0] +  player_hand[i][1]  + ".png' class='cards'>";
-            player_score_displayed.innerHTML = scoreCalculation(player_hand.slice(0, i + 1));
-            await sleep(500);
-        }
-    }
+    player_hand_displayed.innerHTML += "<img src='assets/img/cards/" + player_hand[player_hand.length - 1][0] +  player_hand[player_hand.length - 1][1]  + ".png' class='cards'>";
+    player_score_displayed.innerHTML = scoreCalculation(player_hand);
 }
 
 async function displayDealerCards(nb = 0)
 {
     if(nb != 1){
-        dealer_hand_displayed.innerHTML = "<img src='assets/img/cards/" + dealer_hand[0][0] + dealer_hand[0][1] + ".png' class='cards'>";
-        dealer_score_displayed.innerHTML = scoreCalculation(dealer_hand.slice(0, 1));
-        let i;
-        for(i = 1 ; i < dealer_hand.length ; i++){
-            dealer_hand_displayed.innerHTML += "<img src='assets/img/cards/" + dealer_hand[i][0] +  dealer_hand[i][1]  + ".png' class='cards'>";
-            dealer_score_displayed.innerHTML = scoreCalculation(dealer_hand.slice(0, i + 1));
-            await sleep(500);
-        }
+        dealer_hand_displayed.innerHTML += "<img src='assets/img/cards/" + dealer_hand[dealer_hand.length - 1][0] + dealer_hand[dealer_hand.length - 1][1] + ".png' class='cards'>"; //? On laisse la 1ere à l'exterieur de la boucle pour que ce soit plus joli quand on retourne la 2eme carte
+        dealer_score_displayed.innerHTML = scoreCalculation(dealer_hand);
     }
     else{
         dealer_hand_displayed.innerHTML += "<img src='assets/img/cards/hide.png' class='cards'>";
-        await sleep(500);
     }
 }
 
@@ -148,7 +127,7 @@ function bet(val)
     if(val == -1){
         bankroll += player_bet;
         player_bet = 0;
-        start_button.disabled = true;
+        play_button.disabled = true;
         bankroll_displayed.innerHTML = "Bankroll : " + bankroll + " €<br>Bet : " + player_bet + " €";
         bet_buttons.forEach(element => {
         if(bankroll - parseInt(element.value, 10) < 0){
@@ -160,7 +139,7 @@ function bet(val)
     player_bet += val;
     bankroll -= val;
     bankroll_displayed.innerHTML = "Bankroll : " + bankroll + " €<br>Bet : " + player_bet + " €";
-    start_button.disabled = false;
+    play_button.disabled = false;
     bet_buttons.forEach(element => {
         if(bankroll - parseInt(element.value, 10) < 0){
             element.style.display = "none";
@@ -197,14 +176,16 @@ function checkWin()
     return -1;
 }
 
-function dealerRound()
+async function dealerRound()
 {
     play_buttons.forEach(element => {
         element.disabled = true;
     });
+    dealer_hand_displayed.innerHTML = "<img src='assets/img/cards/" + dealer_hand[0][0] + dealer_hand[0][1] + ".png' class='cards'>";
     displayDealerCards();
-    if(player_score <= 21){
+    if(player_score < 21){
         while(dealer_score < 17){
+            await sleep(500);
             dealCardTo("dealer");
             dealer_score = scoreCalculation(dealer_hand);
             displayDealerCards();
@@ -237,12 +218,13 @@ function newRound()
     dealer_score = 0;
     double_button.disabled = false;
     split_button.disabled = false;
-    start_button.disabled = true;
+    play_button.disabled = true;
     win_insurance = false;
     player_hand = [];
     dealer_hand = [];
     win_state = -1;
     game_state = "first_round";
+    bankroll_displayed.innerHTML = "Bankroll : " + bankroll + " €<br>Bet : " + player_bet + " €";
     if(deck.length <= 20){ //? Si il reste peu de cartes pour un tour, on rattache la défausse à la fin de deck et on mélange le tout
         deck.push(discard);
         discard = [];
@@ -286,6 +268,7 @@ async function start()
         return;
     }
     if(player_score == 21 || dealer_score == 21){
+        await sleep(500);
         dealerRound();
     }
 }
@@ -341,8 +324,8 @@ async function action(act)
         bankroll_displayed.innerHTML = "Bankroll : " + bankroll + " €<br>Bet : " + player_bet + " €";
         if(dealer_score == 21){
             win_insurance = true;
-            checkInsurance();
         }
+        checkInsurance();
     }
     else if(act == "dont_insure"){
         displayInsurance();
@@ -453,6 +436,7 @@ function startGame()
     bet_buttons.forEach(element => {
         element.disabled = false;
     });
+    start_button.innerHTML = "Restart a game";
     displaySettings();
     deck = createDeck(nb_decks_slider.value);
     shuffle(deck);

@@ -391,7 +391,7 @@ body {
 
 /* Clear & Start buttons (non-coin) */
 #clear-bet,
-#start {
+#play {
   width: 70px;
   height: 70px;
   background: rgba(0,0,0,0.55);
@@ -400,22 +400,22 @@ body {
 }
 
 #clear-bet .bet-images,
-#start .bet-images {
+#play .bet-images {
   width: 60px;
   height: 60px;
 }
 
 #clear-bet:hover:not(:disabled),
-#start:hover:not(:disabled) {
+#play:hover:not(:disabled) {
   background: rgba(201,168,76,0.15);
   transform: scale(1.1);
 }
 
-#start {
+#play {
   background: linear-gradient(135deg, var(--gold-dark), var(--gold));
 }
 
-#start .bet-images {
+#play .bet-images {
   filter: invert(1) brightness(0.2);
 }
 
@@ -584,8 +584,8 @@ body {
   .bet-button { width: 62px; height: 62px; }
   .bet-images  { width: 56px; height: 56px; }
 
-  #clear-bet, #start { width: 58px; height: 58px; }
-  #clear-bet .bet-images, #start .bet-images { width: 50px; height: 50px; }
+  #clear-bet, #play { width: 58px; height: 58px; }
+  #clear-bet .bet-images, #play .bet-images { width: 50px; height: 50px; }
 
   .play-button {
     font-size: 0.9rem;

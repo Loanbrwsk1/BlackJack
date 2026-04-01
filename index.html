@@ -22,7 +22,7 @@
         <input type="range" value="6" min="1" max="12" id="nb-decks-selector">
         <p id="nb-decks">6</p>
         <div id="buttons-container">
-            <button onclick="startGame()">(Re)Start a game</button>
+            <button id="start-button" onclick="startGame()">Start a game</button>
         </div>
     </div>
 
@@ -32,7 +32,7 @@
             <p>Dealer must stand on soft 17</p>
             <p class="rules-style">BlackJack pays <span>3 to 2</span></p>
             <p class="rules-style">Insurance pays <span>2 to 1</span></p>
-            <u>Match the Dealer</u> :<br>
+            <u>Match The Dealer</u> :<br>
             <p class="rules-style">1 non-suited match pays             <span>4 to 1</span></p>
             <p class="rules-style">2 non-suited match pays             <span>8 to 1</span></p>
             <p class="rules-style">1 suited match pays                 <span>10 to 1</span></p>
@@ -84,7 +84,7 @@
                 <img src="assets/img/coins/1000.png" alt="1000" class="bet-images" id="thousand-coin">
             </button>
             <button class="action-button bet-button" id="clear-bet" onclick="bet(-1)" disabled><img src="assets/img/icons/clear-bet.png" alt="clear-bet-button" class="bet-images"></button>
-            <button class="action-button bet-button" id="start" onclick="start()" disabled><img src="assets/img/icons/play-button.png" alt="start-button" class="bet-images"></button>
+            <button class="action-button bet-button" id="play" onclick="start()" disabled><img src="assets/img/icons/play-button.png" alt="play-button" class="bet-images"></button>
             <button class="action-button play-button" id="stand" onclick="action('stand')"">Stand</button>
             <button class="action-button play-button" id="split" onclick="action('split')">Split</button>
             <button class="action-button play-button" id="double" onclick="action('double')">Double</button>
