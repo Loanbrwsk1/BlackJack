@@ -49,20 +49,32 @@
         <div id="dealer-container">
             <p>Dealer</p>
             <br>
-            <div class="cards-container" id="dealer-deck">
+            <div class="cards-container" id="dealer-hand">
             </div>
             <br>
             <p class="score" id="dealer-score"></p>
         </div>
     </div>
+
     <div id="player-wrapper">
         <div id="player-container">
-            <p>You</p>
             <br>
-            <div class="cards-container" id="player-deck">
+            <div id="player-hand-container">
+                <p class="you">You</p>
+                <div class="cards-container" id="player-hand">
+                </div>
+                <br>
+                <p class="score" id="player-score"></p>
+                <p class="hand-bet" id="player-hand-bet"></p>
             </div>
-            <br>
-            <p class="score" id="player-score"></p>
+            <div id="split-player-hand-container">
+                <p class="you">Split</p>
+                <div class="cards-container" id="split-player-hand">
+                </div>
+                <br>
+                <p class="score" id="split-player-score"></p>
+                <p class="hand-bet" id="split-player-hand-bet"></p>
+            </div>
         </div>
     </div>
 

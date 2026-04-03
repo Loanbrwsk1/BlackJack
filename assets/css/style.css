@@ -223,6 +223,7 @@ body {
   border-radius: var(--radius-sm);
   padding: 14px 20px;
   letter-spacing: 0.02em;
+  width: 105%;
 }
 
 /* ── Bankroll ────────────────────────────────────────────────── */
@@ -261,15 +262,30 @@ body {
 #player-wrapper { top: 50%; transform: translate(-50%, -10%); }
 
 #dealer-container,
-#player-container {
+#player-hand-container,
+#split-player-hand-container {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 10px;
 }
 
+#player-container {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-around;
+  gap: 10px;
+  width: 100%;
+}
+
+#split-player-hand-container {
+  display: none;
+  margin-left: 80px;
+}
+
 #dealer-container > p:first-child,
-#player-container > p:first-child {
+.you {
   font-family: 'Playfair Display', serif;
   font-size: 1rem;
   font-style: italic;
@@ -323,6 +339,26 @@ body {
   letter-spacing: 0.06em;
 }
 
+#split-player-score {
+  display: flex;
+}
+
+/* ── Hand Bet Badge ─────────────────────────────────────────── */
+.hand-bet {
+  display: block;
+  font-family: 'Playfair Display', serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--gold);
+  background: rgba(0,0,0,0.45);
+  border: var(--border-gold);
+  border-radius: 20px;
+  padding: 3px 14px;
+  letter-spacing: 0.08em;
+  white-space: nowrap;
+  text-align: center;
+}
+
 /* ── Actions Bar ─────────────────────────────────────────────── */
 #actions-wrapper {
   position: fixed;
@@ -360,7 +396,6 @@ body {
 }
 
 .action-button:disabled {
-  padding: 0 !important;
   opacity: 0.35;
   cursor: not-allowed;
   filter: grayscale(0.5);
