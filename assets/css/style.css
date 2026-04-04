@@ -259,7 +259,7 @@ body {
 }
 
 #dealer-wrapper { top: 80px; }
-#player-wrapper { top: 50%; transform: translate(-50%, -10%); }
+#player-wrapper { top: 50%; transform: translate(-50%, -30%); }
 
 #dealer-container,
 #player-hand-container,
@@ -293,6 +293,47 @@ body {
   text-transform: uppercase;
   color: var(--gold);
   opacity: 0.85;
+}
+
+/* ── Indicateur de main active (split) ──────────────────────── */
+#player-hand-container,
+#split-player-hand-container {
+  position: relative;
+}
+
+/* Triangle doré animé au-dessus du label de la main active */
+#player-hand-container.active-hand::before,
+#split-player-hand-container.active-hand::before {
+  content: '';
+  position: absolute;
+  top: -22px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 9px solid transparent;
+  border-right: 9px solid transparent;
+  border-top: 12px solid var(--gold);
+  filter: drop-shadow(0 0 6px rgba(201,168,76,0.7));
+  animation: bounceArrow 0.9s ease-in-out infinite;
+}
+
+/* La main inactive s'atténue */
+#player-hand-container.inactive-hand,
+#split-player-hand-container.inactive-hand {
+  opacity: 0.4;
+  transition: opacity 0.3s;
+}
+
+#player-hand-container.active-hand,
+#split-player-hand-container.active-hand {
+  opacity: 1;
+  transition: opacity 0.3s;
+}
+
+@keyframes bounceArrow {
+  0%, 100% { transform: translateX(-50%) translateY(0); }
+  50%       { transform: translateX(-50%) translateY(5px); }
 }
 
 /* ── Cards ───────────────────────────────────────────────────── */
@@ -617,7 +658,7 @@ body {
 
   .cards { width: 74px; }
 
-  #player-wrapper { transform: translate(-50%, -5%); }
+  #player-wrapper { transform: translate(-50%, -20%); }
 
   .bet-button { width: 62px; height: 62px; }
   .bet-images  { width: 56px; height: 56px; }

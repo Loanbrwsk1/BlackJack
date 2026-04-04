@@ -21,6 +21,7 @@ const result_displayed = document.getElementById("result");
 const result_displayed_wrapper = document.getElementById("result-wrapper");
 const bankroll_displayed = document.getElementById("bankroll");
 const insurance_wrapper = document.getElementById("insurance-wrapper");
+const player_hand_container = document.getElementById("player-hand-container");
 
 const signs = ["S", "H", "D", "C"];
 const default_deck = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A"];
@@ -65,6 +66,44 @@ function displaySettings()
 function displayInsurance()
 {
     insurance_wrapper.style.display = insurance_wrapper.style.display == "flex" ? "none" : "flex";
+}
+
+function displayPlayerCards()
+{
+    player_hand_displayed.innerHTML += "<img src='assets/img/cards/" + player_hand[player_hand.length - 1][0] +  player_hand[player_hand.length - 1][1]  + ".png' class='cards'>";
+    player_score_displayed.innerHTML = scoreCalculation(player_hand);
+}
+
+function displayPlayerBet()
+{
+    player_hand_bet_displayed.innerText = player_bet;
+}
+
+function displaySplitPlayerBet()
+{
+    split_player_hand_bet_displayed.innerText = split_player_bet;
+}
+
+function displaySplitPlayerCards()
+{
+    split_player_hand_displayed.innerHTML += "<img src='assets/img/cards/" + split_player_hand[split_player_hand.length - 1][0] +  split_player_hand[split_player_hand.length - 1][1]  + ".png' class='cards'>";
+    split_player_score_displayed.innerHTML = scoreCalculation(split_player_hand);
+}
+
+function displayDealerCards(nb = 0)
+{
+    if(nb != 1){
+        dealer_hand_displayed.innerHTML += "<img src='assets/img/cards/" + dealer_hand[dealer_hand.length - 1][0] + dealer_hand[dealer_hand.length - 1][1] + ".png' class='cards'>";
+        dealer_score_displayed.innerHTML = scoreCalculation(dealer_hand);
+    }
+    else{
+        dealer_hand_displayed.innerHTML += "<img src='assets/img/cards/hide.png' class='cards'>";
+    }
+}
+
+function displayBankroll()
+{
+    bankroll_displayed.innerHTML = "Bankroll : " + bankroll + " €<br>Bet : " + total_bet + " €";
 }
 
 function createDeck(nb)
@@ -115,44 +154,6 @@ function dealCardTo(hand)
     deck = deck.slice(1);
 }
 
-function displayPlayerCards()
-{
-    player_hand_displayed.innerHTML += "<img src='assets/img/cards/" + player_hand[player_hand.length - 1][0] +  player_hand[player_hand.length - 1][1]  + ".png' class='cards'>";
-    player_score_displayed.innerHTML = scoreCalculation(player_hand);
-}
-
-function displayPlayerBet()
-{
-    player_hand_bet_displayed.innerText = player_bet;
-}
-
-function displaySplitPlayerBet()
-{
-    split_player_hand_bet_displayed.innerText = split_player_bet;
-}
-
-function displaySplitPlayerCards()
-{
-    split_player_hand_displayed.innerHTML += "<img src='assets/img/cards/" + player_hand[player_hand.length - 1][0] +  player_hand[player_hand.length - 1][1]  + ".png' class='cards'>";
-    split_player_score_displayed.innerHTML = scoreCalculation(split_player_hand);
-}
-
-function displayDealerCards(nb = 0)
-{
-    if(nb != 1){
-        dealer_hand_displayed.innerHTML += "<img src='assets/img/cards/" + dealer_hand[dealer_hand.length - 1][0] + dealer_hand[dealer_hand.length - 1][1] + ".png' class='cards'>";
-        dealer_score_displayed.innerHTML = scoreCalculation(dealer_hand);
-    }
-    else{
-        dealer_hand_displayed.innerHTML += "<img src='assets/img/cards/hide.png' class='cards'>";
-    }
-}
-
-function displayBankroll()
-{
-    bankroll_displayed.innerHTML = "Bankroll : " + bankroll + " €<br>Bet : " + total_bet + " €";
-}
-
 function bet(val)
 {
     if(val == -1){
@@ -179,6 +180,20 @@ function bet(val)
             element.style.display = "none";
         }
     });
+}
+
+function setActiveHand(who)
+{
+    player_hand_container.classList.remove("active-hand", "inactive-hand");
+    split_player_hand_container.classList.remove("active-hand", "inactive-hand");
+    if(who == "player"){
+        player_hand_container.classList.add("active-hand");
+        split_player_hand_container.classList.add("inactive-hand");
+    }
+    else if(who == "split"){
+        split_player_hand_container.classList.add("active-hand");
+        player_hand_container.classList.add("inactive-hand");
+    }
 }
 
 async function dealerRound()
@@ -241,6 +256,7 @@ function newRound()
     displayPlayerBet();
     displaySplitPlayerBet();
     displayBankroll();
+    setActiveHand("player");
     if(deck.length <= 20){ //? Si il reste peu de cartes pour un tour, on rattache la défausse à la fin de deck et on mélange le tout
         deck.push(discard);
         discard = [];
@@ -257,17 +273,16 @@ async function start()
         element.style.display = "block";
         element.disabled = true;
     });
-    // dealCardTo(player_hand);
-    player_hand[0] = ["4", "H"];
+    dealCardTo(player_hand);
     player_score_displayed.style.display = "block";
+    setActiveHand("player");
     displayPlayerCards();
     await sleep(500);
     dealCardTo(dealer_hand);
     dealer_score_displayed.style.display = "block";
     displayDealerCards();
     await sleep(500);
-    // dealCardTo(player_hand);
-    player_hand[1] = ["4", "S"];
+    dealCardTo(player_hand);
     displayPlayerCards();
     await sleep(500);
     dealCardTo(dealer_hand);
@@ -311,6 +326,7 @@ async function splitAction(act)
     if(act == "stand"){
         is_spliting = false;
         double_button.disabled = false;
+        setActiveHand("player");
         return;
     }
     else if(act == "hit" && split_player_score <= 20){
@@ -322,6 +338,7 @@ async function splitAction(act)
             is_spliting = false;
             game_state = "first_round";
             double_button.disabled = false;
+            setActiveHand("player");
             return;
         }
     }
@@ -337,6 +354,7 @@ async function splitAction(act)
         await sleep(500);
         is_spliting = false;
         double_button.disabled = false;
+        setActiveHand("player");
         return;
     }
     if(game_state != "first_round"){
@@ -368,6 +386,7 @@ async function action(act)
         total_bet += player_bet;
         split_player_bet = player_bet;
         bankroll -= split_player_bet;
+        setActiveHand("split");
         displayBankroll();
         displaySplitPlayerBet();
         split_button.disabled = true;
