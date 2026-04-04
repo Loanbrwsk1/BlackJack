@@ -47,7 +47,7 @@ let win_insurance = false;
 let mtd_bet = 0;
 let bankroll = 2000;
 let discard = [];
-let game_state = "";
+let is_first_round = false;
 let win_state = -1;
 let game_time = {"h" : 0, "m" : 0, "s" : 0};
 
@@ -300,7 +300,7 @@ function newRound()
     player_hand = [];
     dealer_hand = [];
     win_state = -1;
-    game_state = "first_round";
+    is_first_round = true;
     displayPlayerBet();
     displaySplitPlayerBet();
     displayBankroll();
@@ -384,13 +384,13 @@ async function splitAction(act)
         return;
     }
     else if(act == "hit" && split_player_score <= 20){
-        game_state = "";
+        is_first_round = false;
         dealCardTo(split_player_hand);
         split_player_score = scoreCalculation(split_player_hand);
         displaySplitPlayerCards();
         if(split_player_score >= 21){
             is_spliting = false;
-            game_state = "first_round";
+            is_first_round = true;
             double_button.disabled = false;
             setActiveHand("player");
             return;
@@ -411,7 +411,7 @@ async function splitAction(act)
         setActiveHand("player");
         return;
     }
-    if(game_state != "first_round"){
+    if(!is_first_round){
         double_button.disabled = true;
     }
 }
@@ -426,7 +426,7 @@ async function action(act)
         dealerRound();
     }
     else if(act == "hit" && player_score <= 20){
-        game_state = "";
+        is_first_round = false;
         dealCardTo(player_hand);
         player_score = scoreCalculation(player_hand);
         displayPlayerCards();
@@ -455,7 +455,7 @@ async function action(act)
         split_player_score_displayed.innerText = split_player_score;
     }
     else if(act == "double"){
-        game_state = "";
+        is_first_round = false;
         total_bet += player_bet;
         bankroll -= player_bet;
         player_bet *= 2;
@@ -483,7 +483,7 @@ async function action(act)
             dealerRound();
         }
     }
-    if(game_state != "first_round"){
+    if(!is_first_round){
         double_button.disabled = true;
         split_button.disabled = true;
     }
@@ -575,7 +575,7 @@ function splitCheckWin()
             return "push";
         }
     }
-    else if(game_state == "first_round" && dealer_score == 21 && split_player_score < 21){
+    else if(is_first_round && dealer_score == 21 && split_player_score < 21){
         return "lose";
     }
     else if(dealer_score == split_player_score && split_player_score <= 21 && dealer_score <= 21){
@@ -606,7 +606,7 @@ function checkWin()
             return "blackjack";
         }
     }
-    else if(game_state == "first_round" && dealer_score == 21 && player_score < 21){
+    else if(is_first_round && dealer_score == 21 && player_score < 21){
         return "lose";
     }
     else if(dealer_score == player_score && player_score <= 21 && dealer_score <= 21){
@@ -768,7 +768,7 @@ function startGame()
     win_insurance = false;
     bankroll = 2000;
     discard = [];
-    game_state = "";
+    is_first_round = false;
     win_state = -1;
     game_time = {"h" : 0, "m" : 0, "s" : 0};
     displayBankroll();
