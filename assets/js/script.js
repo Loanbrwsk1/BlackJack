@@ -4,6 +4,7 @@ const nb_decks_slider = document.getElementById("nb-decks-selector");
 const start_button = document.getElementById("start-button");
 const dealer_hand_displayed = document.getElementById("dealer-hand");
 const dealer_score_displayed = document.getElementById("dealer-score");
+const player_hand_container = document.getElementById("player-hand-container");
 const player_hand_displayed = document.getElementById("player-hand");
 const player_score_displayed = document.getElementById("player-score");
 const split_player_hand_container = document.getElementById("split-player-hand-container");
@@ -21,7 +22,10 @@ const result_displayed = document.getElementById("result");
 const result_displayed_wrapper = document.getElementById("result-wrapper");
 const bankroll_displayed = document.getElementById("bankroll");
 const insurance_wrapper = document.getElementById("insurance-wrapper");
-const player_hand_container = document.getElementById("player-hand-container");
+const mtd_wrapper = document.getElementById("mtd-wrapper");
+const mtd_bet_display = document.getElementById("mtd-bet-display");
+const mtd_button = document.getElementById("mtd-button");
+const bet_buttons_mtd = document.querySelectorAll(".bet-button-mtd");
 
 const signs = ["S", "H", "D", "C"];
 const default_deck = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A"];
@@ -40,6 +44,7 @@ let total_bet = 0;
 let split_player_bet = 0;
 let insurance_bet = 0;
 let win_insurance = false;
+let mtd_bet = 0;
 let bankroll = 2000;
 let discard = [];
 let game_state = "";
@@ -48,6 +53,7 @@ let game_time = {"h" : 0, "m" : 0, "s" : 0};
 
 settings_page.style.display = "flex";
 split_player_hand_container.style.display = "none";
+mtd_wrapper.style.display = "none";
 
 nb_decks_slider.addEventListener('input', function() {
     nb_decks.innerText = this.value;
@@ -66,6 +72,16 @@ function displaySettings()
 function displayInsurance()
 {
     insurance_wrapper.style.display = insurance_wrapper.style.display == "flex" ? "none" : "flex";
+}
+
+function displayMTD()
+{
+    mtd_wrapper.style.display = mtd_wrapper.style.display == "block" ? "none" : "block";
+}
+
+function displayMTDBet()
+{
+    mtd_bet_display.innerHTML = "Bet : " + mtd_bet;
 }
 
 function displayPlayerCards()
@@ -163,7 +179,7 @@ function bet(val)
         play_button.disabled = true;
         displayBankroll();
         bet_buttons.forEach(element => {
-        if(bankroll - parseInt(element.value, 10) < 0){
+        if(bankroll - parseInt(element.value, 10) > 0){
             element.style.display = "flex";
         }
         });
@@ -175,6 +191,33 @@ function bet(val)
     displayBankroll();
     displayPlayerBet();
     play_button.disabled = false;
+    bet_buttons.forEach(element => {
+        if(bankroll - parseInt(element.value, 10) < 0){
+            element.style.display = "none";
+        }
+    });
+}
+
+function betMTD(val)
+{
+    if(val == -1){
+        bankroll += mtd_bet;
+        mtd_bet = 0;
+        mtd_button.disabled = false;
+        displayBankroll();
+        displayMTDBet();
+        bet_buttons.forEach(element => {
+        if(bankroll - parseInt(element.value, 10) > 0){
+            element.style.display = "flex";
+        }
+        });
+        return;
+    }
+    mtd_bet += val;
+    bankroll -= val;
+    displayBankroll();
+    displayMTDBet();
+    mtd_button.disabled = true;
     bet_buttons.forEach(element => {
         if(bankroll - parseInt(element.value, 10) < 0){
             element.style.display = "none";
@@ -240,13 +283,18 @@ function newRound()
         element.style.display = "none";
         element.disabled = false;
     });
+    bet_buttons_mtd.forEach(element => {
+        element.disabled = false;
+    });
     player_bet = 0;
     player_score = 0;
     dealer_score = 0;
     total_bet = 0;
+    mtd_bet = 0;
     double_button.disabled = false;
     split_button.disabled = false;
     play_button.disabled = true;
+    mtd_button.disabled = false;
     win_insurance = false;
     has_splited = false;
     player_hand = [];
@@ -256,6 +304,7 @@ function newRound()
     displayPlayerBet();
     displaySplitPlayerBet();
     displayBankroll();
+    displayMTDBet();
     setActiveHand("player");
     if(deck.length <= 20){ //? Si il reste peu de cartes pour un tour, on rattache la défausse à la fin de deck et on mélange le tout
         deck.push(discard);
@@ -273,6 +322,10 @@ async function start()
         element.style.display = "block";
         element.disabled = true;
     });
+    bet_buttons_mtd.forEach(element => {
+        element.disabled = true;
+    });
+    mtd_button.disabled = true;
     dealCardTo(player_hand);
     player_score_displayed.style.display = "block";
     setActiveHand("player");
@@ -295,6 +348,7 @@ async function start()
     if(cards_value[player_hand[0][0]] != cards_value[player_hand[1][0]]){
         split_button.disabled = true;
     }
+    resultMTD();
     if(dealer_hand[0][0] == "A"){
         displayInsurance();
         return;
@@ -432,6 +486,85 @@ async function action(act)
     if(game_state != "first_round"){
         double_button.disabled = true;
         split_button.disabled = true;
+    }
+}
+
+function checkMTD()
+{
+    if(mtd_bet != 0){
+        let dealer_nb_card = dealer_hand[0][0];
+        let dealer_sign_card = dealer_hand[0][1];
+        let player_nb_card1 = player_hand[0][0];
+        let player_sign_card1 = player_hand[0][1];
+        let player_nb_card2 = player_hand[1][0];
+        let player_sign_card2 = player_hand[0][1];
+        if(player_nb_card1 == dealer_nb_card && player_sign_card1 != dealer_sign_card && player_nb_card2 != dealer_nb_card && player_sign_card2 != dealer_sign_card){
+            return "1 non suited";
+        }
+        else if(player_nb_card2 == dealer_nb_card && player_sign_card2 != dealer_sign_card && player_nb_card1 != dealer_nb_card && player_sign_card1 != dealer_sign_card){
+            return "1 non suited";
+        }
+        else if(player_nb_card1 == dealer_nb_card && player_sign_card1 != dealer_sign_card && player_nb_card2 == dealer_nb_card && player_sign_card2 != dealer_sign_card){
+            return "2 non suited";
+        }
+        else if(player_nb_card1 == dealer_nb_card && player_sign_card1 == dealer_sign_card && player_nb_card2 != dealer_nb_card && player_sign_card2 != dealer_sign_card){
+            return "1 suited";
+        }
+        else if(player_nb_card2 == dealer_nb_card && player_sign_card2 == dealer_sign_card && player_nb_card1 != dealer_nb_card && player_sign_card1 != dealer_sign_card){
+            return "1 suited";
+        }
+        else if(player_nb_card1 == dealer_nb_card && player_sign_card1 == dealer_sign_card && player_nb_card2 == dealer_nb_card && player_sign_card2 != dealer_sign_card){
+            return "1 non suited & 1 suited";
+        }
+        else if(player_nb_card2 == dealer_nb_card && player_sign_card2 == dealer_sign_card && player_nb_card1 == dealer_nb_card && player_sign_card1 != dealer_sign_card){
+            return "1 non suited & 1 suited";
+        }
+        else if(player_nb_card1 == dealer_nb_card && player_sign_card1 == dealer_sign_card && player_nb_card2 == dealer_nb_card && player_sign_card2 == dealer_sign_card){
+            return "2 suited";
+        }
+        return "lose";
+    }
+    return -1;
+}
+
+async function resultMTD()
+{
+    let win_mtd = checkMTD();
+    let win_mtd_bet = 0;
+    if(win_mtd != -1){
+        if(win_mtd == "1 non suited"){
+            win_mtd_bet = mtd_bet * 4;
+        }
+        else if(win_mtd == "2 non suited"){
+            win_mtd_bet = mtd_bet * 8;
+        }
+        else if(win_mtd == "1 suited"){
+            win_mtd_bet = mtd_bet * 10;
+        }
+        else if(win_mtd == "1 non suited & 1 suited"){
+            win_mtd_bet = mtd_bet * 14;
+        }
+        else if(win_mtd == "2 suited"){
+            win_mtd_bet = mtd_bet * 20;
+        }
+        else if(win_mtd == "lose"){
+            result_displayed_wrapper.style.display = "flex";
+            result_displayed.innerHTML = "<u>Match The Dealer</u><br>Lose !<br>-" + mtd_bet + " €";
+            await sleep(2000);
+            result_displayed_wrapper.style.display = "none";
+            displayMTD();
+            await sleep(500);
+            return;
+        }
+        result_displayed_wrapper.style.display = "flex";
+        result_displayed.innerHTML = "<u>Match The Dealer</u><br>" + win_mtd + "<br>+" + win_mtd_bet + " €";
+        await sleep(2000);
+        result_displayed_wrapper.style.display = "none";
+        await sleep(500);
+        bankroll += mtd_bet + win_mtd_bet;
+        displayBankroll();
+        displayMTD();
+        await sleep(500);
     }
 }
 

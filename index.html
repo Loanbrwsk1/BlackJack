@@ -97,8 +97,12 @@
             <button class="action-button bet-button coins" id="thousand" value="1000" onclick="bet(1000)" disabled>
                 <img src="assets/img/coins/1000.png" alt="1000" class="bet-images" id="thousand-coin">
             </button>
-            <button class="action-button bet-button" id="clear-bet" onclick="bet(-1)" disabled><img src="assets/img/icons/clear-bet.png" alt="clear-bet-button" class="bet-images"></button>
-            <button class="action-button bet-button" id="play" onclick="start()" disabled><img src="assets/img/icons/play-button.png" alt="play-button" class="bet-images"></button>
+            <button class="action-button bet-button" id="clear-bet" onclick="bet(-1)" disabled>
+                <img src="assets/img/icons/clear-bet.png" alt="clear-bet-button" class="bet-images">
+            </button>
+            <button class="action-button bet-button" id="play" onclick="start()" disabled>
+                <img src="assets/img/icons/play-button.png" alt="play-button" class="bet-images">
+            </button>
             <button class="action-button play-button" id="stand" onclick="action('stand')">Stand</button>
             <button class="action-button play-button" id="split" onclick="action('split')">Split</button>
             <button class="action-button play-button" id="double" onclick="action('double')">Double</button>
@@ -117,6 +121,38 @@
     <div id="result-wrapper">
         <div id="result-container">
             <p id="result"></p>
+        </div>
+    </div>
+
+    <div id="mtd-button-wrapper">
+        <div id="mtd-button-container">
+            <button id="mtd-button" onclick="displayMTD()" disabled>Match The Dealer</button>
+        </div>
+    </div>
+
+    <div id="mtd-wrapper">
+        <div id="mtd-container">
+            <p id="mtd-bet-display">Bet :</p>
+            <div id="mtd-coins">
+                <button class="action-button bet-button-mtd coins" id="ten" value="10" onclick="betMTD(10)">
+                    <img src="assets/img/coins/10.png" alt="10" class="bet-images" id="ten-coin">
+                </button>
+                <button class="action-button bet-button-mtd coins" id="fifty" value="50" onclick="betMTD(50)">
+                    <img src="assets/img/coins/50.png" alt="50" class="bet-images" id="fifty-coin">
+                </button>
+                <button class="action-button bet-button-mtd coins" id="hundred" value="100" onclick="betMTD(100)">
+                    <img src="assets/img/coins/100.png" alt="100" class="bet-images" id="hundred-coin">
+                </button>
+                <button class="action-button bet-button-mtd coins" id="five-hundred" value="500" onclick="betMTD(500)">
+                    <img src="assets/img/coins/500.png" alt="500" class="bet-images" id="five-hundred-coin">
+                </button>
+                <button class="action-button bet-button-mtd coins" id="thousand" value="1000" onclick="betMTD(1000)">
+                    <img src="assets/img/coins/1000.png" alt="1000" class="bet-images" id="thousand-coin">
+                </button>
+                <button class="action-button bet-button-mtd" id="clear-bet-mtd" onclick="betMTD(-1)">
+                    <img src="assets/img/icons/clear-bet.png" alt="clear-bet-mtd-button" class="bet-images">
+                </button>
+            </div>
         </div>
     </div>
 
