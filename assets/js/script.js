@@ -40,7 +40,6 @@ let has_splited = false;
 let player_score = 0;
 let split_player_score = 0;
 let player_bet = 0;
-let total_bet = 0;
 let split_player_bet = 0;
 let insurance_bet = 0;
 let win_insurance = false;
@@ -49,6 +48,7 @@ let bankroll = 2000;
 let discard = [];
 let is_first_round = false;
 let win_state = -1;
+let is_running = false;
 let game_time = {"h" : 0, "m" : 0, "s" : 0};
 
 settings_page.style.display = "flex";
@@ -119,7 +119,7 @@ function displayDealerCards(nb = 0)
 
 function displayBankroll()
 {
-    bankroll_displayed.innerHTML = "Bankroll : " + bankroll + " €<br>Bet : " + total_bet + " €";
+    bankroll_displayed.innerHTML = "Bankroll : " + bankroll + " €";
 }
 
 function createDeck(nb)
@@ -173,8 +173,7 @@ function dealCardTo(hand)
 function bet(val)
 {
     if(val == -1){
-        bankroll += total_bet;
-        total_bet = 0;
+        bankroll += player_bet;
         player_bet = 0;
         play_button.disabled = true;
         displayBankroll();
@@ -185,7 +184,6 @@ function bet(val)
         });
         return;
     }
-    total_bet += val;
     player_bet += val;
     bankroll -= val;
     displayBankroll();
@@ -289,7 +287,6 @@ function newRound()
     player_bet = 0;
     player_score = 0;
     dealer_score = 0;
-    total_bet = 0;
     mtd_bet = 0;
     double_button.disabled = false;
     split_button.disabled = false;
@@ -304,7 +301,6 @@ function newRound()
     displayPlayerBet();
     displaySplitPlayerBet();
     displayBankroll();
-    displayMTDBet();
     setActiveHand("player");
     if(deck.length <= 20){ //? Si il reste peu de cartes pour un tour, on rattache la défausse à la fin de deck et on mélange le tout
         deck.push(discard);
@@ -437,7 +433,6 @@ async function action(act)
     else if(act == "split"){
         is_spliting = true;
         has_splited = true;
-        total_bet += player_bet;
         split_player_bet = player_bet;
         bankroll -= split_player_bet;
         setActiveHand("split");
@@ -456,7 +451,6 @@ async function action(act)
     }
     else if(act == "double"){
         is_first_round = false;
-        total_bet += player_bet;
         bankroll -= player_bet;
         player_bet *= 2;
         displayBankroll();
@@ -552,7 +546,6 @@ async function resultMTD()
             result_displayed.innerHTML = "<u>Match The Dealer</u><br>Lose !<br>-" + mtd_bet + " €";
             await sleep(2000);
             result_displayed_wrapper.style.display = "none";
-            displayMTD();
             await sleep(500);
             return;
         }
@@ -563,7 +556,7 @@ async function resultMTD()
         await sleep(500);
         bankroll += mtd_bet + win_mtd_bet;
         displayBankroll();
-        displayMTD();
+        displayMTDBet();
         await sleep(500);
     }
 }
@@ -736,9 +729,9 @@ async function result(){
     }
 }
 
-function gameTime()
+function startGame() 
 {
-    setTimeout(() => {
+    let id_timer = setInterval(() => {
         game_time["s"]++;
         if(game_time["s"] == 60){
             game_time["s"] = 0;
@@ -749,12 +742,10 @@ function gameTime()
             game_time["h"]++;
         }
         game_time_displayed.innerText = game_time["h"] + "h " + game_time["m"] + "m " + game_time["s"] + "s";
-        gameTime();
     }, 1000);
-}
-
-function startGame() 
-{
+    if(is_running){
+        clearInterval(id_timer);
+    }
     deck = [];
     dealer_hand = [];
     dealer_score = 0;
@@ -762,7 +753,6 @@ function startGame()
     split_player_hand = [];
     player_score = 0;
     player_bet = 0;
-    total_bet = 0;
     split_player_bet = 0;
     insurance_bet = 0;
     win_insurance = false;
@@ -770,6 +760,7 @@ function startGame()
     discard = [];
     is_first_round = false;
     win_state = -1;
+    is_running = true;
     game_time = {"h" : 0, "m" : 0, "s" : 0};
     displayBankroll();
     bet_buttons.forEach(element => {
@@ -779,6 +770,5 @@ function startGame()
     displaySettings();
     deck = createDeck(nb_decks_slider.value);
     shuffle(deck);
-    gameTime();
     newRound();
 }
