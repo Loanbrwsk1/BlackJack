@@ -27,6 +27,13 @@ const mtd_bet_display = document.getElementById("mtd-bet-display");
 const mtd_button = document.getElementById("mtd-button");
 const bet_buttons_mtd = document.querySelectorAll(".bet-button-mtd");
 
+const draw_card_sound = new Audio("assets/wav/draw-card.wav");
+const chip_sound = new Audio("assets/wav/chip-sound.wav");
+const win_sound = new Audio("assets/wav/win-sound.wav");
+const lose_sound = new Audio("assets/wav/lose-sound.wav");
+const push_sound = new Audio("assets/wav/push-sound.wav");
+const blackjack_sound = new Audio("assets/wav/blackjack-sound.wav");
+
 const signs = ["S", "H", "D", "C"];
 const default_deck = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A"];
 const cards_value = {"2" : 2, "3" : 3, "4" : 4, "5" : 5, "6" : 6, "7" : 7, "8" : 8, "9" : 9, "10" : 10, "J" : 10, "Q" : 10, "K" : 10, "A" : 11};
@@ -86,6 +93,7 @@ function displayMTDBet()
 
 function displayPlayerCards()
 {
+    draw_card_sound.play();
     player_hand_displayed.innerHTML += "<img src='assets/img/cards/" + player_hand[player_hand.length - 1][0] +  player_hand[player_hand.length - 1][1]  + ".png' class='cards'>";
     player_score_displayed.innerHTML = scoreCalculation(player_hand);
 }
@@ -102,12 +110,14 @@ function displaySplitPlayerBet()
 
 function displaySplitPlayerCards()
 {
+    draw_card_sound.play();
     split_player_hand_displayed.innerHTML += "<img src='assets/img/cards/" + split_player_hand[split_player_hand.length - 1][0] +  split_player_hand[split_player_hand.length - 1][1]  + ".png' class='cards'>";
     split_player_score_displayed.innerHTML = scoreCalculation(split_player_hand);
 }
 
 function displayDealerCards(nb = 0)
 {
+    draw_card_sound.play();
     if(nb != 1){
         dealer_hand_displayed.innerHTML += "<img src='assets/img/cards/" + dealer_hand[dealer_hand.length - 1][0] + dealer_hand[dealer_hand.length - 1][1] + ".png' class='cards'>";
         dealer_score_displayed.innerHTML = scoreCalculation(dealer_hand);
@@ -172,11 +182,13 @@ function dealCardTo(hand)
 
 function bet(val)
 {
+    chip_sound.play();
     if(val == -1){
         bankroll += player_bet;
         player_bet = 0;
         play_button.disabled = true;
         displayBankroll();
+        displayPlayerBet();
         bet_buttons.forEach(element => {
         if(bankroll - parseInt(element.value, 10) > 0){
             element.style.display = "flex";
@@ -242,6 +254,7 @@ async function dealerRound()
     play_buttons.forEach(element => {
         element.disabled = true;
     });
+    await sleep();
     dealer_hand_displayed.innerHTML = "<img src='assets/img/cards/" + dealer_hand[0][0] + dealer_hand[0][1] + ".png' class='cards'>";
     displayDealerCards();
     if(player_score < 21){
@@ -287,6 +300,7 @@ function newRound()
     player_bet = 0;
     player_score = 0;
     dealer_score = 0;
+    split_player_score = 0;
     mtd_bet = 0;
     double_button.disabled = false;
     split_button.disabled = false;
@@ -296,11 +310,13 @@ function newRound()
     has_splited = false;
     player_hand = [];
     dealer_hand = [];
+    split_player_hand = [];
     win_state = -1;
     is_first_round = true;
     displayPlayerBet();
     displaySplitPlayerBet();
     displayBankroll();
+    displayMTDBet();
     setActiveHand("player");
     if(deck.length <= 20){ //? Si il reste peu de cartes pour un tour, on rattache la défausse à la fin de deck et on mélange le tout
         deck.push(discard);
@@ -359,11 +375,13 @@ async function checkInsurance()
 {
     result_displayed_wrapper.style.display = "flex";
     if(win_insurance){
+        win_sound.play();
         bankroll += insurance_bet + insurance_bet * 2;
         displayBankroll();
         result_displayed.innerHTML = "Insurance :<br>+" + insurance_bet * 2 + " €";
     }
     else{
+        lose_sound.play();
         result_displayed.innerHTML = "Insurance :<br>-" + insurance_bet + " €";
     }
     await sleep(2000);
@@ -394,7 +412,6 @@ async function splitAction(act)
     }
     else if(act == "double"){
         bankroll -= split_player_bet;
-        total_bet += split_player_bet;
         split_player_bet *= 2;
         displayBankroll();
         displaySplitPlayerBet();
@@ -542,19 +559,24 @@ async function resultMTD()
             win_mtd_bet = mtd_bet * 20;
         }
         else if(win_mtd == "lose"){
+            lose_sound.play();
             result_displayed_wrapper.style.display = "flex";
             result_displayed.innerHTML = "<u>Match The Dealer</u><br>Lose !<br>-" + mtd_bet + " €";
             await sleep(2000);
             result_displayed_wrapper.style.display = "none";
             await sleep(500);
+            mtd_bet = 0;
+            displayMTDBet();
             return;
         }
+        win_sound.play();
         result_displayed_wrapper.style.display = "flex";
         result_displayed.innerHTML = "<u>Match The Dealer</u><br>" + win_mtd + "<br>+" + win_mtd_bet + " €";
         await sleep(2000);
         result_displayed_wrapper.style.display = "none";
         await sleep(500);
         bankroll += mtd_bet + win_mtd_bet;
+        mtd_bet = 0;
         displayBankroll();
         displayMTDBet();
         await sleep(500);
@@ -624,6 +646,7 @@ async function splitResult(){
     await sleep(1000);
     win_state = splitCheckWin();
     if(win_state == "lose"){
+        lose_sound.play();
         result_displayed_wrapper.style.display = "flex";
         result_displayed.innerHTML = "<u>Split</u><br>Lose !<br>-" + split_player_bet + " €";
         await sleep(2000);
@@ -632,6 +655,7 @@ async function splitResult(){
         displayBankroll();
     }
     else if(win_state == "bust"){
+        lose_sound.play();
         result_displayed_wrapper.style.display = "flex";
         result_displayed.innerHTML = "<u>Split</u><br>Bust !<br>-" + split_player_bet + " €";
         await sleep(2000);
@@ -640,6 +664,7 @@ async function splitResult(){
         displayBankroll();
     }
     else if(win_state == "win"){
+        win_sound.play();
         result_displayed_wrapper.style.display = "flex";
         result_displayed.innerHTML = "<u>Split</u><br>Win !<br>+" + split_player_bet + " €";
         await sleep(2000);
@@ -649,6 +674,7 @@ async function splitResult(){
         displayBankroll();
     }
     else if(win_state == "push"){
+        push_sound.play();
         result_displayed_wrapper.style.display = "flex";
         result_displayed.innerText = "<u>Split</u><br>Push !";
         await sleep(2000);
@@ -674,6 +700,7 @@ async function result(){
     await sleep(1000);
     win_state = checkWin();
     if(win_state == "lose"){
+        lose_sound.play();
         result_displayed_wrapper.style.display = "flex";
         result_displayed.innerHTML = "Lose !<br>-" + player_bet + " €";
         await sleep(2000);
@@ -682,6 +709,7 @@ async function result(){
         displayBankroll();
     }
     else if(win_state == "bust"){
+        lose_sound.play();
         result_displayed_wrapper.style.display = "flex";
         result_displayed.innerHTML = "Bust !<br>-" + player_bet + " €";
         await sleep(2000);
@@ -690,6 +718,7 @@ async function result(){
         displayBankroll();
     }
     else if(win_state == "blackjack"){
+        blackjack_sound.play();
         result_displayed_wrapper.style.display = "flex";
         result_displayed.innerHTML = "BlackJack !<br>+" + player_bet * 1.5 + " €";
         await sleep(2000);
@@ -699,6 +728,7 @@ async function result(){
         displayBankroll();
     }
     else if(win_state == "win"){
+        win_sound.play();
         result_displayed_wrapper.style.display = "flex";
         result_displayed.innerHTML = "Win !<br>+" + player_bet + " €";
         await sleep(2000);
@@ -708,6 +738,7 @@ async function result(){
         displayBankroll();
     }
     else if(win_state == "push"){
+        push_sound.play();
         result_displayed_wrapper.style.display = "flex";
         result_displayed.innerText = "Push !";
         await sleep(2000);
