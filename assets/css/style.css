@@ -31,7 +31,7 @@
 }
 
 html {
-  font-size: 18px; /* base augmentée */
+  font-size: 18px; /* increased base size */
 }
 
 html, body {
@@ -295,13 +295,13 @@ body {
   opacity: 0.85;
 }
 
-/* ── Indicateur de main active (split) ──────────────────────── */
+/* ── Active Hand Indicator (split) ─────────────────────────── */
 #player-hand-container,
 #split-player-hand-container {
   position: relative;
 }
 
-/* Triangle doré animé au-dessus du label de la main active */
+/* Animated gold triangle above the active hand label */
 #player-hand-container.active-hand::before,
 #split-player-hand-container.active-hand::before {
   content: '';
@@ -318,7 +318,7 @@ body {
   animation: bounceArrow 0.9s ease-in-out infinite;
 }
 
-/* La main inactive s'atténue */
+/* Inactive hand fades out */
 #player-hand-container.inactive-hand,
 #split-player-hand-container.inactive-hand {
   opacity: 0.4;
@@ -469,7 +469,7 @@ body {
   display: block;
 }
 
-/* Clear & Start buttons (non-coin) */
+/* Clear & Start buttons (non-chip) */
 #clear-bet,
 #play {
   width: 70px;
@@ -679,7 +679,7 @@ body {
 }
 /* ── Match The Dealer ────────────────────────────────────────── */
 
-/* Bouton déclencheur MTD — ancré en bas à gauche */
+/* MTD trigger button — anchored bottom left */
 #mtd-button-wrapper {
   position: fixed;
   bottom: 12vh;
@@ -708,7 +708,7 @@ body {
   transform: translateY(-2px);
 }
 
-/* Badge de mise MTD affiché sur le bouton quand une mise est placée */
+/* MTD bet badge shown on button when a bet is placed */
 #mtd-button.has-bet {
   background: rgba(201,168,76,0.2);
   border-color: var(--gold);
@@ -730,7 +730,7 @@ body {
   transform: none;
 }
 
-/* Panneau de mise MTD — s'ouvre au-dessus du bouton */
+/* MTD bet panel — opens above the button */
 #mtd-wrapper {
   position: fixed;
   bottom: 18vh;
@@ -769,7 +769,7 @@ body {
   flex-wrap: wrap;
 }
 
-/* Taille réduite des jetons dans le panneau MTD */
+/* Smaller chip size inside the MTD panel */
 #mtd-container .bet-button, .bet-button-mtd {
   width: 62px;
   height: 62px;
