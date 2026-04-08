@@ -26,6 +26,7 @@ const mtd_wrapper = document.getElementById("mtd-wrapper");
 const mtd_bet_display = document.getElementById("mtd-bet-display");
 const mtd_button = document.getElementById("mtd-button");
 const bet_buttons_mtd = document.querySelectorAll(".bet-button-mtd");
+const hi_lo_counter_displayed = document.getElementById("hi-lo-counter");
 
 const draw_card_sound = new Audio("assets/wav/draw-card.wav");
 const chip_sound = new Audio("assets/wav/chip-sound.wav");
@@ -37,6 +38,7 @@ const blackjack_sound = new Audio("assets/wav/blackjack-sound.wav");
 const signs = ["S", "H", "D", "C"];
 const default_deck = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "J", "Q", "K", "A"];
 const cards_value = {"2" : 2, "3" : 3, "4" : 4, "5" : 5, "6" : 6, "7" : 7, "8" : 8, "9" : 9, "10" : 10, "J" : 10, "Q" : 10, "K" : 10, "A" : 11};
+const hi_lo_value = {"2" : 1, "3" : 1, "4" : 1, "5" : 1, "6" : 1, "7" : 0, "8" : 0, "9" : 0, "10" : -1, "J" : -1, "Q" : -1, "K" : -1, "A" : -1};
 let deck = [];
 let dealer_hand = [];
 let dealer_score = 0;
@@ -51,12 +53,15 @@ let split_player_bet = 0;
 let insurance_bet = 0;
 let win_insurance = false;
 let mtd_bet = 0;
+let is_dealer_first_round = false;
 let bankroll = 2000;
 let discard = [];
 let is_first_round = false;
 let win_state = -1;
 let is_running = false;
 let game_time = {"h" : 0, "m" : 0, "s" : 0};
+let hi_lo_counter = 0;
+let true_count = 0;
 
 settings_page.style.display = "flex";
 split_player_hand_container.style.display = "none";
@@ -132,6 +137,11 @@ function displayBankroll()
     bankroll_displayed.innerHTML = "Bankroll : " + bankroll + " €";
 }
 
+function displayTrueCount()
+{
+    hi_lo_counter_displayed.innerText = "True Count : " + true_count;
+}
+
 function createDeck(nb)
 {
     let i, j, k, deck_created = [];
@@ -178,6 +188,8 @@ function dealCardTo(hand)
     hand.push(deck[0]);
     discard.push(deck[0]);
     deck = deck.slice(1);
+    countHiLo();
+    displayTrueCount();
 }
 
 function bet(val)
@@ -217,8 +229,8 @@ function betMTD(val)
         displayBankroll();
         displayMTDBet();
         bet_buttons.forEach(element => {
-        if(bankroll - parseInt(element.value, 10) > 0){
-            element.style.display = "flex";
+            if(bankroll - parseInt(element.value, 10) > 0){
+                element.style.display = "flex";
         }
         });
         return;
@@ -249,8 +261,30 @@ function setActiveHand(who)
     }
 }
 
+function countTrueCount()
+{
+    true_count = hi_lo_counter / (deck.length / 52);
+    true_count = Math.round(true_count * 100) / 100;
+}
+
+function countHiLo(nb = 0)
+{
+    let i;
+    hi_lo_counter = 0;
+    for(i = 0 ; i < discard.length ; i++){
+        hi_lo_counter += hi_lo_value[discard[i][0]];
+    }
+    if(nb == 1 || is_dealer_first_round){
+        hi_lo_counter -= hi_lo_value[dealer_hand[1][0]];
+    }
+    countTrueCount();
+}
+
 async function dealerRound()
 {
+    is_dealer_first_round = false;
+    countHiLo();
+    displayTrueCount();
     play_buttons.forEach(element => {
         element.disabled = true;
     });
@@ -318,10 +352,12 @@ function newRound()
     displayBankroll();
     displayMTDBet();
     setActiveHand("player");
-    if(deck.length <= 20){ //? Si il reste peu de cartes pour un tour, on rattache la défausse à la fin de deck et on mélange le tout
+    if(deck.length <= 20){ //? If there are few cards left for a turn, we attach the discard at the end of the deck and mix everything together, and reset Hi-Lo
         deck.push(discard);
         discard = [];
         shuffle(deck);
+        hi_lo_counter = 0;
+        displayTrueCount();
     }
 }
 
@@ -352,6 +388,9 @@ async function start()
     await sleep(500);
     dealCardTo(dealer_hand);
     displayDealerCards(1);
+    countHiLo(1);
+    displayTrueCount();
+    is_dealer_first_round = true;
     play_buttons.forEach(element => {
         element.disabled = false;
     });

@@ -831,3 +831,47 @@ body {
   #clear-bet-mtd, #play-mtd { width: 50px; height: 50px; }
   #clear-bet-mtd .bet-images, #play-mtd .bet-images { width: 42px; height: 42px; }
 }
+/* ── Hi-Lo Counter ───────────────────────────────────────────── */
+#hi-lo-wrapper {
+  position: fixed;
+  bottom: 12vh;
+  left: 15vw;
+  z-index: 20;
+}
+
+#hi-lo-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  background: rgba(0,0,0,0.55);
+  border: var(--border-gold);
+  border-radius: var(--radius);
+  padding: 12px 20px;
+  text-align: center;
+}
+
+#hi-lo-container p {
+  font-family: 'Playfair Display', serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--gold);
+  white-space: nowrap;
+}
+
+#hi-lo-container p:first-child {
+  font-size: 1.2rem;
+  color: var(--gold-light);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  #hi-lo-wrapper {
+    bottom: 96px;
+    right: 12px;
+  }
+
+  #hi-lo-container p { font-size: 0.82rem; }
+  #hi-lo-container p:first-child { font-size: 1rem; }
+}
