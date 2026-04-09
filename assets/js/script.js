@@ -288,13 +288,14 @@ async function dealerRound()
     play_buttons.forEach(element => {
         element.disabled = true;
     });
-    await sleep();
     dealer_hand_displayed.innerHTML = "<img src='assets/img/cards/" + dealer_hand[0][0] + dealer_hand[0][1] + ".png' class='cards'>";
     displayDealerCards();
-    if(player_score < 21){
+    if((player_score <= 21 && checkWin() != "blackjack") || (has_splited && player_score <= 21 && split_player_score <= 21)){
         while(dealer_score < 17){
             await sleep(500);
             dealCardTo(dealer_hand);
+            countHiLo();
+            displayTrueCount();
             dealer_score = scoreCalculation(dealer_hand);
             displayDealerCards();
         }
@@ -483,6 +484,7 @@ async function action(act)
         player_score = scoreCalculation(player_hand);
         displayPlayerCards();
         if(player_score >= 21){
+            await sleep(500);
             dealerRound();
         }
     }
@@ -526,10 +528,19 @@ async function action(act)
             win_insurance = true;
         }
         checkInsurance();
+        if(player_score == 21 || dealer_score == 21){
+            await sleep(500);
+            dealerRound();
+        }
     }
     else if(act == "dont_insure"){
         displayInsurance();
         if(dealer_score == 21){
+            await sleep(500);
+            dealerRound();
+        }
+        if(player_score == 21 || dealer_score == 21){
+            await sleep(500);
             dealerRound();
         }
     }
@@ -601,7 +612,7 @@ async function resultMTD()
             lose_sound.play();
             result_displayed_wrapper.style.display = "flex";
             result_displayed.innerHTML = "<u>Match The Dealer</u><br>Lose !<br>-" + mtd_bet + " €";
-            await sleep(2000);
+            await sleep(1000);
             result_displayed_wrapper.style.display = "none";
             await sleep(500);
             mtd_bet = 0;
@@ -715,7 +726,7 @@ async function splitResult(){
     else if(win_state == "push"){
         push_sound.play();
         result_displayed_wrapper.style.display = "flex";
-        result_displayed.innerText = "<u>Split</u><br>Push !";
+        result_displayed.innerHTML = "<u>Split</u><br>Push !";
         await sleep(2000);
         result_displayed_wrapper.style.display = "none";
         bankroll += split_player_bet;
