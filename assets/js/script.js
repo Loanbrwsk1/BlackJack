@@ -183,7 +183,7 @@ function scoreCalculation(deck_to_calculate)
     return score;
 }
 
-function dealCardTo(hand)
+function drawCardTo(hand)
 {
     hand.push(deck[0]);
     discard.push(deck[0]);
@@ -290,10 +290,10 @@ async function dealerRound()
     });
     dealer_hand_displayed.innerHTML = "<img src='assets/img/cards/" + dealer_hand[0][0] + dealer_hand[0][1] + ".png' class='cards'>";
     displayDealerCards();
-    if((player_score <= 21 && checkWin() != "blackjack") || (has_splited && player_score <= 21 && split_player_score <= 21)){
+    if((player_score <= 21 && checkWin() != "blackjack") || (has_splited && (player_score <= 21 || split_player_score <= 21))){
         while(dealer_score < 17){
             await sleep(500);
-            dealCardTo(dealer_hand);
+            drawCardTo(dealer_hand);
             countHiLo();
             displayTrueCount();
             dealer_score = scoreCalculation(dealer_hand);
@@ -375,19 +375,19 @@ async function start()
         element.disabled = true;
     });
     mtd_button.disabled = true;
-    dealCardTo(player_hand);
+    drawCardTo(player_hand);
     player_score_displayed.style.display = "block";
     setActiveHand("player");
     displayPlayerCards();
     await sleep(500);
-    dealCardTo(dealer_hand);
+    drawCardTo(dealer_hand);
     dealer_score_displayed.style.display = "block";
     displayDealerCards();
     await sleep(500);
-    dealCardTo(player_hand);
+    drawCardTo(player_hand);
     displayPlayerCards();
     await sleep(500);
-    dealCardTo(dealer_hand);
+    drawCardTo(dealer_hand);
     displayDealerCards(1);
     countHiLo(1);
     displayTrueCount();
@@ -435,11 +435,14 @@ async function splitAction(act)
         is_spliting = false;
         double_button.disabled = false;
         setActiveHand("player");
+        await sleep(500);
+        drawCardTo(player_hand);
+        displayPlayerCards();
         return;
     }
     else if(act == "hit" && split_player_score <= 20){
         is_first_round = false;
-        dealCardTo(split_player_hand);
+        drawCardTo(split_player_hand);
         split_player_score = scoreCalculation(split_player_hand);
         displaySplitPlayerCards();
         if(split_player_score >= 21){
@@ -447,6 +450,9 @@ async function splitAction(act)
             is_first_round = true;
             double_button.disabled = false;
             setActiveHand("player");
+            await sleep(500);
+            drawCardTo(player_hand);
+            displayPlayerCards();
             return;
         }
     }
@@ -455,13 +461,16 @@ async function splitAction(act)
         split_player_bet *= 2;
         displayBankroll();
         displaySplitPlayerBet();
-        dealCardTo(split_player_hand);
+        drawCardTo(split_player_hand);
         split_player_score = scoreCalculation(split_player_hand);
         displaySplitPlayerCards();
         await sleep(500);
         is_spliting = false;
         double_button.disabled = false;
         setActiveHand("player");
+        await sleep(500);
+        drawCardTo(player_hand);
+        displayPlayerCards();
         return;
     }
     if(!is_first_round){
@@ -480,7 +489,7 @@ async function action(act)
     }
     else if(act == "hit" && player_score <= 20){
         is_first_round = false;
-        dealCardTo(player_hand);
+        drawCardTo(player_hand);
         player_score = scoreCalculation(player_hand);
         displayPlayerCards();
         if(player_score >= 21){
@@ -502,10 +511,12 @@ async function action(act)
         player_score = scoreCalculation(player_hand);
         split_player_score = scoreCalculation(split_player_hand);
         split_player_hand_container.style.display = "flex";
-        player_hand_displayed.innerHTML = "<img src='assets/img/cards/" + player_hand[0][0] +  player_hand[0][1]  + ".png' class='cards'>";
-        player_score_displayed.innerText = player_score;
-        split_player_hand_displayed.innerHTML = "<img src='assets/img/cards/" + split_player_hand[0][0] + split_player_hand[0][1] + ".png' class='cards'>";
-        split_player_score_displayed.innerText = split_player_score;
+        player_hand_displayed.innerHTML = "";
+        displayPlayerCards();
+        displaySplitPlayerCards();
+        await sleep(500);
+        drawCardTo(split_player_hand);
+        displaySplitPlayerCards();
     }
     else if(act == "double"){
         is_first_round = false;
@@ -513,7 +524,7 @@ async function action(act)
         player_bet *= 2;
         displayBankroll();
         displayPlayerBet();
-        dealCardTo(player_hand);
+        drawCardTo(player_hand);
         player_score = scoreCalculation(player_hand);
         displayPlayerCards();
         await sleep(500);
