@@ -222,6 +222,7 @@ function bet(val)
 
 function betMTD(val)
 {
+    chip_sound.play();
     if(val == -1){
         bankroll += mtd_bet;
         mtd_bet = 0;
