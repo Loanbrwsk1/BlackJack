@@ -1,11 +1,23 @@
+<!--
+@author : Loan BOROWSKI
+@update : 27/04/26
+
+Main page
+-->
+
+<? session_start() ?>
+
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="icon" href="/assets/img//icons/logo.png">
+    <link rel="stylesheet" href="/assets/css/style-blackjack.css">
     <title>BlackJack</title>
 </head>
+
 <body>
     <div id="game-time-container">
         <div id="game-time">
@@ -18,6 +30,16 @@
     </div>
 
     <div id="settings-page">
+        <div id="user-account">
+            <a href="account"><img src="assets/img/icons/user.png" alt="user-icon" id="user-icon"></a><?= $_SESSION["username"] ?>
+        </div>
+        <?php 
+        if($_SESSION['admin_access'] == "true"){
+            echo "<div id='user-account'>
+            <a href='adminpanel'><img src='assets/img/icons/admin.png' alt='admin-icon' id='user-icon'></a>Admin Panel
+        </div>";
+        } ?>
+        
         <p>Number of packs of cards</p>
         <input type="range" value="6" min="1" max="12" id="nb-decks-selector">
         <p id="nb-decks">6</p>
@@ -33,16 +55,16 @@
             <p class="rules-style">BlackJack pays <span>3 to 2</span></p>
             <p class="rules-style">Insurance pays <span>2 to 1</span></p>
             <u>Match The Dealer</u> :<br>
-            <p class="rules-style">1 non-suited match pays             <span>4 to 1</span></p>
-            <p class="rules-style">2 non-suited match pays             <span>8 to 1</span></p>
-            <p class="rules-style">1 suited match pays                 <span>10 to 1</span></p>
-            <p class="rules-style">1 non-suited & 1 suited match pays  <span>14 to 1</span></p>
-            <p class="rules-style">2 suited match pays                 <span>20 to 1</span></p>
+            <p class="rules-style">1 non-suited match pays <span>4 to 1</span></p>
+            <p class="rules-style">2 non-suited match pays <span>8 to 1</span></p>
+            <p class="rules-style">1 suited match pays <span>10 to 1</span></p>
+            <p class="rules-style">1 non-suited & 1 suited match pays <span>14 to 1</span></p>
+            <p class="rules-style">2 suited match pays <span>20 to 1</span></p>
         </div>
     </div>
 
     <div id="bankroll-container">
-        <p id="bankroll">Bankroll : 2000 €</p>
+        <p id="bankroll">Bankroll : <?= $_SESSION["bankroll"] ?> €</p>
     </div>
 
     <div id="dealer-wrapper">
@@ -162,6 +184,7 @@
         </div>
     </div>
 
-    <script src="assets/js/script.js"></script>
+    <script src="/assets/js/script-blackjack.js"></script>
 </body>
+
 </html>
