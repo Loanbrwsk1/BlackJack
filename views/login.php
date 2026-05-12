@@ -5,7 +5,6 @@
 Login page
 -->
 
-<?php session_start() ?>
 
 <!DOCTYPE html>
 <html lang="en">
@@ -17,7 +16,7 @@ Login page
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <link rel="stylesheet" href="/assets/css/style.css">
-    <title>BlackJack - Login</title>
+    <title>BlackJack - Log In</title>
 </head>
 
 <body>
@@ -59,14 +58,14 @@ Login page
             </div>
             
             <button type="submit" class="submit-btn">
-                <span class="btn-text">Sign In</span>
+                <span class="btn-text">Log In</span>
             </button>
 
         </form>
 
         <div class="login-footer">
             <div class="divider"></div>
-            <p>No account? <a href="index.php?page=create">Create an account</a></p>
+            <p>No account? <a href="create">Create an account</a></p>
         </div>
 
     </div>

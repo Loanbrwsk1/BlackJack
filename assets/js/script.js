@@ -2,7 +2,7 @@
 @author : Loan BOROWSKI
 @update : 27/04/26
 
-JS for showing password and display the delete pop up confirmation
+JS for all the site except the BlackJack
 */
 
 const password_input = document.getElementById("password");

@@ -20,7 +20,8 @@
 
 <body>
     <div class="page-not-found-container">
-        <h1 class="page-not-found">Erreur 404 : URL Not Found</h2>
+        <h1 class="page-not-found">Erreur 404 : URL Not Found</h1>
+        <a href="/login">Back to home</a>
     </div>
 </body>
 

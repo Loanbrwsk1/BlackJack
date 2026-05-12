@@ -1,6 +1,6 @@
 <!--
 @author : Loan BOROWSKI
-@update : 27/04/26
+@update : 8/05/26
 
 Functions related to the DB
 -->
@@ -17,6 +17,7 @@ function Connect()
     global $DB;
     $username = htmlspecialchars($_POST['username']);
     $password = htmlspecialchars($_POST['password']);
+    $stay_connected = htmlspecialchars($_POST['stay-connected']);
 
     $SQL = 'SELECT username, password, bankroll, admin_access FROM users WHERE username = ?';
     $result = $DB->prepare($SQL);
@@ -34,6 +35,11 @@ function Connect()
         $_SESSION['username'] = $username_db;
         $_SESSION['bankroll'] = $bankroll;
         $_SESSION['admin_access'] = $admin_access;
+        UpdateToken();
+        if($stay_connected != "on"){
+            setcookie("token", "", time() - 3600);
+            unset($_COOKIE["token"]);
+        }
         return 1;
     }
     else if($username != $username_db){
@@ -56,27 +62,34 @@ function Create()
     $username = htmlspecialchars($_POST['username']);
     $password = htmlspecialchars($_POST['password']);
     $confirm_password = htmlspecialchars($_POST['confirm-password']);
+    $stay_connected = htmlspecialchars($_POST["stay-connected"]);
 
     $SQL = 'SELECT username FROM users WHERE username = ?';
     $result = $DB->prepare($SQL);
     $result->bindValue(1, $username);
     $result->execute();
     $datas = $result->fetch();
-
+    
     $username_db = htmlspecialchars($datas['username']);
     $result->closeCursor();
     
     if(empty($username_db) && $password == $confirm_password){
-        $SQL = 'INSERT INTO users(username, password, bankroll, admin_access) VALUES (?, ?, 2000, "false")';
+        $SQL = 'INSERT INTO users(username, password, bankroll, admin_access, token) VALUES (?, ?, 2000, "false", "")';
         $result = $DB->prepare($SQL);
         $result->bindValue(1, $username);
         $result->bindValue(2, password_hash($password, PASSWORD_BCRYPT));
         $result->execute();
         $result->CloseCursor();
-
+        
         $_SESSION['username'] = $username;
         $_SESSION['bankroll'] = 2000;
         $_SESSION['admin_access'] = "false";
+
+        UpdateToken();
+        if($stay_connected != "on"){
+            setcookie("token", "", time() - 3600);
+            unset($_COOKIE["token"]);
+        }
         return 1;
     }
     else if(!empty($username_db)){
@@ -174,4 +187,50 @@ function UpdateAdminDB($username, $admin_access)
     $result->bindValue(2, $username);
     $result->execute();
     $result->closeCursor();
+}
+
+function UpdateToken()
+{
+    //? Generate a new token and put it in th DB
+    global $DB;
+    $_SESSION["token"] = bin2hex(random_bytes(32));
+
+    $SQL = 'UPDATE users SET token = ? WHERE username = ?';
+    $result = $DB->prepare($SQL);
+    $result->bindValue(1, htmlspecialchars($_SESSION["token"]));
+    $result->bindValue(2, htmlspecialchars($_SESSION["username"]));
+    $result->execute();
+    $result->closeCursor();
+    $expire = time() + 365 * 24 * 60 * 60;
+    $options = [
+        'expires'  => $expire,
+        'path'     => '/',
+        'secure'   => false
+    ];
+    setcookie("token", $_SESSION["token"], $options);
+}
+
+function GetAutoLogin()
+{
+    //? Auto log when the cookie is set, update the token and change it in the session and returns 1
+    //? If and admin deleted the account, the username will be empty and so returns 0
+    global $DB;
+
+    $SQL = 'SELECT username, bankroll, admin_access FROM users WHERE token = ?';
+    $result = $DB->prepare($SQL);
+    $result->bindValue(1, htmlspecialchars($_COOKIE["token"]));
+    $result->execute();
+    $datas = $result->fetch();
+    
+    $_SESSION["username"] = htmlspecialchars($datas["username"]);
+    $_SESSION["bankroll"] = htmlspecialchars($datas["bankroll"]);
+    $_SESSION["admin_access"] = htmlspecialchars($datas["admin_access"]);
+    $result->closeCursor();
+
+    if(empty($_SESSION["username"])){
+        return 0;
+    }
+
+    UpdateToken();
+    return 1;
 }

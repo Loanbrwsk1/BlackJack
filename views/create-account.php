@@ -72,14 +72,14 @@ Create account page
             </div>
 
             <button type="submit" class="submit-btn">
-                <span class="btn-text">Create Account</span>
+                <span class="btn-text">Sign In</span>
             </button>
 
         </form>
 
         <div class="login-footer">
             <div class="divider"></div>
-            <p>Have an account? <a href="index.php?page=login">Log In</a></p>
+            <p>Have an account? <a href="login">Log In</a></p>
         </div>
 
     </div>

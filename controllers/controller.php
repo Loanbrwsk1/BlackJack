@@ -26,7 +26,7 @@ function DisplayAccount()
 
 function DisplayAdminPanel()
 {
-    //? Display admin panel page after fecth the DB to have all the users
+    //? Display admin panel page after fetch the DB to have all the users
     require_once "models/model.php";
     GetUsers();
     require "views/admin-panel.php";
@@ -34,7 +34,7 @@ function DisplayAdminPanel()
 
 function CheckConnect()
 {
-    //? Check if user exists then display home if user exists or return to login else
+    //? Check if user exists then display home if user exists or else return to login
     require "models/model.php";
     if(Connect()){
         header("Location: home");
@@ -92,7 +92,10 @@ function DeleteAccount()
 {
     //? Delete current account and go to login page
     require_once "models/model.php";
+    unset($_SESSION["username"]);
     Delete(htmlspecialchars($_SESSION["username"]));
+    setcookie("token", "", time() - 3600);
+    unset($_COOKIE["token"]);
     header("Location: login");
     exit();
 }
@@ -117,10 +120,25 @@ function UpdateAdmin($username, $admin_access)
 
 function LogOut()
 {
-    //? Logout of the session by destroying the session and go to login page
-    session_start();
+    //? Logout of the session by destroying the session, remove cookie and go to login page
     unset($_SESSION['username']);
     session_destroy();
-    header("location: login");
+    setcookie("token", "", time() - 3600);
+    unset($_COOKIE["token"]);
+    header("location: /login");
     exit();
+}
+
+function AutoLogin()
+{
+    //? Get the credentials and datas of the account and go to home
+    //? If the account was deleted by an admin, the account is loged out
+    require_once "models/model.php";
+    if(GetAutoLogin()){
+        header("Location: /home");
+        exit();
+    }
+    else{
+        LogOut();
+    }
 }

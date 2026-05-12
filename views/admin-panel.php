@@ -7,7 +7,7 @@ Admin Panel page
 
 <?php 
 session_start();
-if($_SESSION['admin_access'] == "false"){
+if($_SESSION['admin_access'] == "false" || !isset($_SESSION["admin_access"]) || empty($_SESSION["username"])){
     header("Location: home");
 }
 ?>

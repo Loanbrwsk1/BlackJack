@@ -1,8 +1,8 @@
 <!--
 @author : Loan BOROWSKI
-@update : 27/04/26
+@update : 8/05/26
 
-Redirects the input URLs to the corresponding functions from the controller
+Redirects the input URLs to the corresponding functions from the controller and auto login if the cookie is set
 -->
 
 <?php
@@ -10,8 +10,15 @@ session_start();
 
 require "controllers/controller.php";
 
+if(!isset($_SESSION["username"]) && empty($_SESSION["username"]) && isset($_COOKIE["token"]) && !empty($_COOKIE["token"])){
+    AutoLogin();
+}
+
 if(isset($_GET["page"]) && !empty($_GET["page"])){
     $page = htmlspecialchars($_GET["page"]);
+    if(($page == "login" || $page == "create") && isset($_SESSION["username"])){
+        $page = "home";
+    }
 }
 else{
     $page = "login";
