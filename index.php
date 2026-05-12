@@ -14,6 +14,10 @@ if(!isset($_SESSION["username"]) && empty($_SESSION["username"]) && isset($_COOK
     AutoLogin();
 }
 
+if(!isset($_GET["page"]) && !empty($_GET["page"]) && isset($_SESSION["username"]) && !empty($_SESSION["username"]) && !isset($_GET["action"]) && empty($_GET["action"])){
+    RedirectHome();
+}
+
 if(isset($_GET["page"]) && !empty($_GET["page"])){
     $page = htmlspecialchars($_GET["page"]);
     if(($page == "login" || $page == "create") && isset($_SESSION["username"])){
@@ -27,9 +31,6 @@ if(isset($_GET["page"]) && !empty($_GET["page"])){
     }
 }
 else{
-    if(isset($_SESSION["username"]) && !empty($_SESSION["username"]) && !isset($_GET["action"]) && empty($_GET["action"])){
-        RedirectHome();
-    }
     $page = "login";
 }
 
