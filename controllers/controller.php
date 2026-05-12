@@ -122,9 +122,9 @@ function LogOut()
 {
     //? Logout of the session by destroying the session, remove cookie and go to login page
     unset($_SESSION['username']);
-    session_destroy();
     setcookie("token", "", time() - 3600);
     unset($_COOKIE["token"]);
+    session_destroy();
     header("location: /login");
     exit();
 }
@@ -141,4 +141,16 @@ function AutoLogin()
     else{
         LogOut();
     }
+}
+
+function RedirectHome()
+{
+    header("Location: /home");
+    exit();
+}
+
+function RedirectLogin()
+{
+    header("Location: /login");
+    exit();
 }

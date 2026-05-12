@@ -5,7 +5,6 @@
 Main page
 -->
 
-<?php if(!isset($_SESSION["username"])){header("Location: /login");} ?>
 
 <!DOCTYPE html>
 <html lang="en">

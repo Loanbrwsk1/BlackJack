@@ -17,10 +17,19 @@ if(!isset($_SESSION["username"]) && empty($_SESSION["username"]) && isset($_COOK
 if(isset($_GET["page"]) && !empty($_GET["page"])){
     $page = htmlspecialchars($_GET["page"]);
     if(($page == "login" || $page == "create") && isset($_SESSION["username"])){
-        $page = "home";
+        RedirectHome();
+    }
+    if(($page == "account" || $page == "home") && !isset($_SESSION["username"])){
+        RedirectLogin();
+    }
+    if($page == "adminpanel" && (!isset($_SESSION["admin_access"]) || htmlspecialchars($_SESSION["admin_access"]) != "true")){
+        RedirectHome();
     }
 }
 else{
+    if(isset($_SESSION["username"]) && !empty($_SESSION["username"]) && !isset($_GET["action"]) && empty($_GET["action"])){
+        RedirectHome();
+    }
     $page = "login";
 }
 
