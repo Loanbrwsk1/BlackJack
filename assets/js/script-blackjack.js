@@ -1,8 +1,10 @@
 /*
 @author : Loan BOROWSKI
-@update : 27/04/26
+@update : 16/05/26
 
 JS for the BlackJack
+
+Assistance by AI : Generation of the documentation (Claude Sonnet 4.6)
 */
 
 const settings_page = document.getElementById("settings-page");
@@ -79,6 +81,7 @@ nb_decks_slider.addEventListener('input', function() {
     nb_decks.innerText = this.value;
 });
 
+// Automatically saves the bankroll every second if it has changed
 setInterval(() => {
     if(bankroll !== old_bankroll){
         const form_data = new FormData();
@@ -92,31 +95,54 @@ setInterval(() => {
     }
 }, 1000);
 
+/**
+ * Creates a promise that resolves after a given delay.
+ * Used to introduce asynchronous pauses in the game.
+ * @param {number} ms - Duration of the pause in milliseconds.
+ * @returns {Promise<void>} A promise resolved after `ms` milliseconds.
+*/
 function sleep(ms)
 {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
+/**
+ * Shows or hides the settings page.
+ * Toggles visibility between "flex" and "none".
+*/
 function displaySettings() 
 {
     settings_page.style.display = settings_page.style.display == "none" ? "flex" : "none";
 }
 
+/**
+ * Shows or hides the insurance panel.
+ * Toggles visibility between "flex" and "none".
+*/
 function displayInsurance()
 {
     insurance_wrapper.style.display = insurance_wrapper.style.display == "flex" ? "none" : "flex";
 }
 
+/**
+ * Shows or hides the Match The Dealer (MTD) bet panel.
+ * Toggles visibility between "block" and "none".
+*/
 function displayMTD()
 {
     mtd_wrapper.style.display = mtd_wrapper.style.display == "block" ? "none" : "block";
 }
 
+// Updates the display of the Match The Dealer (MTD) bet amount.
 function displayMTDBet()
 {
     mtd_bet_display.innerHTML = "Bet : " + mtd_bet;
 }
 
+/**
+ * Displays the last card added to the player's hand and updates their score.
+ * Also plays the card drawing sound.
+*/
 function displayPlayerCards()
 {
     draw_card_sound.play();
@@ -124,16 +150,22 @@ function displayPlayerCards()
     player_score_displayed.innerHTML = scoreCalculation(player_hand);
 }
 
+// Updates the display of the player's current bet.
 function displayPlayerBet()
 {
     player_hand_bet_displayed.innerText = player_bet;
 }
 
+// Updates the display of the player's split hand bet.
 function displaySplitPlayerBet()
 {
     split_player_hand_bet_displayed.innerText = split_player_bet;
 }
 
+/**
+ * Displays the last card added to the player's split hand and updates their score.
+ * Also plays the card drawing sound.
+*/
 function displaySplitPlayerCards()
 {
     draw_card_sound.play();
@@ -141,6 +173,12 @@ function displaySplitPlayerCards()
     split_player_score_displayed.innerHTML = scoreCalculation(split_player_hand);
 }
 
+/**
+ * Displays the dealer's last card.
+ * If `nb` equals 1, displays a face-down card (hole card); otherwise shows the real card.
+ * Also plays the card drawing sound.
+ * @param {number} [nb=0] - If 1, displays the dealer's hidden card; otherwise shows the actual card.
+*/
 function displayDealerCards(nb = 0)
 {
     draw_card_sound.play();
@@ -153,16 +191,24 @@ function displayDealerCards(nb = 0)
     }
 }
 
+// Updates the player's bankroll display in the interface.
 function displayBankroll()
 {
     bankroll_displayed.innerHTML = "Bankroll : " + bankroll + " €";
 }
 
+// Updates the Hi-Lo True Count display in the interface.
 function displayTrueCount()
 {
     hi_lo_counter_displayed.innerText = "True Count : " + true_count;
 }
 
+/**
+ * Creates a shoe made up of `nb` standard 52-card decks.
+ * Each card is represented as an array [value, suit].
+ * @param {number} nb - Number of 52-card decks to include in the shoe.
+ * @returns {Array<Array<string>>} The created shoe of cards.
+*/
 function createDeck(nb)
 {
     let i, j, k, deck_created = [];
@@ -176,6 +222,10 @@ function createDeck(nb)
     return deck_created;
 }
 
+/**
+ * Shuffles a deck of cards in place using the Fisher-Yates algorithm.
+ * @param {Array<Array<string>>} deck - The deck of cards to shuffle.
+*/
 function shuffle(deck) 
 {
     var j, x, i;
@@ -187,6 +237,12 @@ function shuffle(deck)
     }
 }
 
+/**
+ * Calculates the score of a blackjack hand.
+ * Aces are worth 11 by default but are reduced to 1 if the score exceeds 21.
+ * @param {Array<Array<string>>} deck_to_calculate - The hand of cards to evaluate.
+ * @returns {number} The calculated score of the hand.
+*/
 function scoreCalculation(deck_to_calculate)
 {
     let i, score = 0, nb_A = 0;
@@ -204,6 +260,11 @@ function scoreCalculation(deck_to_calculate)
     return score;
 }
 
+/**
+ * Draws the first card from the shoe and adds it to the specified hand.
+ * The card is also added to the discard pile and the Hi-Lo counter is updated.
+ * @param {Array<Array<string>>} hand - The hand to add the drawn card to.
+*/
 function drawCardTo(hand)
 {
     hand.push(deck[0]);
@@ -213,6 +274,13 @@ function drawCardTo(hand)
     displayTrueCount();
 }
 
+/**
+ * Handles the player's main bet.
+ * If `val` equals -1, cancels the bet and refunds the player.
+ * Otherwise, adds `val` to the bet and deducts the amount from the bankroll.
+ * Updates the display and enables/disables buttons based on the remaining bankroll.
+ * @param {number} val - Amount to bet, or -1 to cancel the bet.
+*/
 function bet(val)
 {
     chip_sound.play();
@@ -241,6 +309,13 @@ function bet(val)
     });
 }
 
+/**
+ * Handles the secondary Match The Dealer (MTD) side bet.
+ * If `val` equals -1, cancels the MTD bet and refunds the player.
+ * Otherwise, adds `val` to the MTD bet and deducts it from the bankroll.
+ * Disables the MTD button while a bet is in progress.
+ * @param {number} val - Amount to bet, or -1 to cancel the MTD bet.
+*/
 function betMTD(val)
 {
     chip_sound.play();
@@ -269,8 +344,14 @@ function betMTD(val)
     });
 }
 
+/**
+ * Visually sets which hand is active during a split.
+ * Applies the CSS classes "active-hand" and "inactive-hand" according to the parameter.
+ * @param {string} who - "player" to activate the main hand, "split" for the split hand.
+*/
 function setActiveHand(who)
 {
+    
     player_hand_container.classList.remove("active-hand", "inactive-hand");
     split_player_hand_container.classList.remove("active-hand", "inactive-hand");
     if(who == "player"){
@@ -283,12 +364,24 @@ function setActiveHand(who)
     }
 }
 
+/**
+ * Calculates and updates the True Count from the Hi-Lo Running Count.
+ * The True Count is the Running Count divided by the number of remaining decks,
+ * rounded to two decimal places.
+*/
 function countTrueCount()
 {
     true_count = hi_lo_counter / (deck.length / 52);
     true_count = Math.round(true_count * 100) / 100;
 }
 
+/**
+ * Recalculates the Hi-Lo Running Count from the cards in the discard pile.
+ * If `nb` equals 1 or if it is the dealer's first round, the dealer's hole card
+ * is excluded from the count (as it is not yet visible).
+ * Also updates the True Count.
+ * @param {number} [nb=0] - If 1, excludes the dealer's hole card from the count.
+*/
 function countHiLo(nb = 0)
 {
     let i;
@@ -302,6 +395,12 @@ function countHiLo(nb = 0)
     countTrueCount();
 }
 
+/**
+ * Handles the dealer's turn after the player has finished their actions.
+ * Reveals the dealer's hole card, then draws cards until reaching 17 or more.
+ * Then triggers the result calculation (standard or split).
+ * @async
+ */
 async function dealerRound()
 {
     is_dealer_first_round = false;
@@ -330,6 +429,11 @@ async function dealerRound()
     }
 }
 
+/**
+ * Resets the interface and variables for a new round.
+ * Clears all hands, resets bets to zero, re-enables bet buttons,
+ * and reloads the shoe if the remaining card count is too low (≤ 20).
+ */
 function newRound()
 {
     player_hand_displayed.innerHTML = "";
@@ -384,6 +488,13 @@ function newRound()
     }
 }
 
+/**
+ * Deals the initial cards for a blackjack round.
+ * Deals two cards to the player and two to the dealer (the dealer's second card is face down).
+ * Checks if a blackjack or 21 is reached and triggers insurance if needed.
+ * Also handles the MTD side bet and disables split if the player's two cards differ.
+ * @async
+ */
 async function start()
 {
     bet_buttons.forEach(element => {
@@ -433,6 +544,12 @@ async function start()
     }
 }
 
+/**
+ * Checks the insurance bet result and displays the gain or loss.
+ * If the player took insurance and the dealer has a blackjack,
+ * the player receives 2:1 on their insurance bet.
+ * @async
+ */
 async function checkInsurance()
 {
     result_displayed_wrapper.style.display = "flex";
@@ -451,6 +568,15 @@ async function checkInsurance()
     win_insurance = false;
 }
 
+/**
+ * Handles the player's actions on the split hand.
+ * - "stand": the player moves to the main hand.
+ * - "hit": draws an extra card for the split hand.
+ * - "double": doubles the bet, draws one card and moves back to the main hand.
+ * Disables the "double" button after the first turn.
+ * @async
+ * @param {string} act - The chosen action: "stand", "hit" or "double".
+ */
 async function splitAction(act)
 {
     if(act == "stand"){
@@ -500,6 +626,20 @@ async function splitAction(act)
     }
 }
 
+/**
+ * Handles the player's actions on their main hand.
+ * Redirects to splitAction() if a split is in progress.
+ * Available actions:
+ * - "stand": triggers the dealer's turn.
+ * - "hit": draws an extra card.
+ * - "split": splits the hand in two if both cards have the same value.
+ * - "double": doubles the bet, draws one card, then moves to the dealer's turn.
+ * - "insure": places an insurance bet (50% of the main bet).
+ * - "dont_insure": declines insurance and continues normally.
+ * Disables "double" and "split" after the first turn.
+ * @async
+ * @param {string} act - The chosen action: "stand", "hit", "split", "double", "insure", "dont_insure".
+ */
 async function action(act)
 {
     if(is_spliting){
@@ -583,6 +723,19 @@ async function action(act)
     }
 }
 
+/**
+ * Checks the result of the Match The Dealer (MTD) side bet.
+ * Compares the value and suit of the dealer's first card
+ * against each of the player's two initial cards.
+ * @returns {string|number} The MTD result:
+ *   - "1 non suited": one card matches in value (different suit)
+ *   - "2 non suited": both cards match in value (different suits)
+ *   - "1 suited": one card matches in value AND suit
+ *   - "1 non suited & 1 suited": one card matches (non suited) and another (suited)
+ *   - "2 suited": both cards match in value AND suit
+ *   - "lose": no card matches
+ *   - -1: no MTD bet was placed
+ */
 function checkMTD()
 {
     if(mtd_bet != 0){
@@ -621,6 +774,18 @@ function checkMTD()
     return -1;
 }
 
+/**
+ * Calculates and displays the Match The Dealer (MTD) bet result.
+ * Applies win multipliers based on the match type:
+ * - "1 non suited": x4
+ * - "2 non suited": x8
+ * - "1 suited": x10
+ * - "1 non suited & 1 suited": x14
+ * - "2 suited": x20
+ * - "lose": the MTD bet is lost
+ * Updates the bankroll if the player wins.
+ * @async
+ */
 async function resultMTD()
 {
     let win_mtd = checkMTD();
@@ -666,6 +831,15 @@ async function resultMTD()
     }
 }
 
+/**
+ * Determines the result of the player's split hand against the dealer.
+ * @returns {string|number} The result, one of:
+ *   - "push": tie
+ *   - "lose": the player loses
+ *   - "bust": the player exceeds 21
+ *   - "win": the player wins
+ *   - -1: undetermined result
+ */
 function splitCheckWin()
 {
     if(split_player_hand.length == 2 && split_player_score == 21){
@@ -694,6 +868,17 @@ function splitCheckWin()
     return -1;
 }
 
+/**
+ * Determines the result of the player's main hand against the dealer.
+ * Takes into account a natural blackjack (only outside of a split).
+ * @returns {string|number} The result, one of:
+ *   - "push": tie
+ *   - "blackjack": natural blackjack (pays 3:2)
+ *   - "lose": the player loses
+ *   - "bust": the player exceeds 21
+ *   - "win": the player wins
+ *   - -1: undetermined result
+ */
 function checkWin()
 {
     if(player_hand.length == 2 && player_score == 21){
@@ -725,6 +910,13 @@ function checkWin()
     return -1;
 }
 
+/**
+ * Displays the result of the player's split hand and updates the bankroll accordingly.
+ * Handles the cases: lose, bust, win, push.
+ * If the bankroll reaches 0, displays a message and returns to the settings page.
+ * Then chains into result() for the main hand.
+ * @async
+ */
 async function splitResult(){
     await sleep(1000);
     win_state = splitCheckWin();
@@ -779,6 +971,13 @@ async function splitResult(){
     }
 }
 
+/**
+ * Displays the final result of the player's main hand and updates the bankroll.
+ * Handles the cases: lose, bust, blackjack (pays 3:2), win, push.
+ * If the bankroll reaches 0, displays a message and returns to the settings page.
+ * Then chains into newRound() to start a new round.
+ * @async
+ */
 async function result(){
     await sleep(1000);
     win_state = checkWin();
@@ -843,6 +1042,12 @@ async function result(){
     }
 }
 
+/**
+ * Initializes and starts a new blackjack game.
+ * Resets all game variables, creates and shuffles a new shoe
+ * based on the selected number of decks, starts the game timer
+ * and launches the first round via newRound().
+ */
 function startGame() 
 {
     let id_timer = setInterval(() => {
